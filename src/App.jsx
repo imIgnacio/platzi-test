@@ -1,32 +1,59 @@
-import React, { useState } from 'react';
-import reactLogo from './assets/react.svg';
+import React from 'react';
+import Header from './components/Header';
+import Card from './components/Card';
+import Loading from './components/Loading';
+import { useFetch } from './hooks/useFetch';
+import { sort } from './utils/sort';
 import './App.scss';
+// import { useSort } from './hooks/useSort';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const { data, setData, loading } = useFetch(
+    'https://fakestoreapi.com/products/'
+  );
+
+  const handleFilterChange = e => {
+    const sortedData = sort(data, e.target.value);
+    setData(sortedData);
+  };
 
   return (
     <div className='App'>
-      <div>
-        <a href='https://vitejs.dev' target='_blank' rel='noreferrer'>
-          <img src='/vite.svg' className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://reactjs.org' target='_blank' rel='noreferrer'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount(count => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header>
+        <label htmlFor='config'>Ordenar por:</label>
+        <select name='config' id='config' onChange={handleFilterChange}>
+          <option value='none'></option>
+          <option value='priceAsc'>Precio (Menor a mayor)</option>
+          <option value='priceDesc'>Precio (Mayor a menor)</option>
+          <option value='nameAsc'>Nombre A-Z</option>
+          <option value='nameDesc'>Nombre Z-A</option>
+          <option value='ratingAsc'>Rating (Menor a mayor)</option>
+          <option value='ratingDesc'>Rating (Mayor a menor)</option>
+        </select>
+      </Header>
+      <main>
+        {loading ? (
+          <Loading />
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              gap: '16px',
+              flexWrap: 'wrap',
+              justifyContent: 'space-evenly',
+            }}
+          >
+            {data.map(product => (
+              <Card
+                key={product.id}
+                image={product.image}
+                title={product.title}
+                price={product.price}
+              />
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

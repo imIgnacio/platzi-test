@@ -35,6 +35,7 @@ module.exports = {
       },
     ],
     'one-var-declaration-per-line': ['error', 'always'],
+    'react/prop-types': 'off',
     'prettier/prettier': 'error',
   },
 };
